@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Gift Hub — Thoughtful gifts, delivered</title>
+<meta name="description" content="Curated gifts for every occasion. Personalised prints, home décor and self-care sets.">
+<style>
+  :root{
+    --ink:#241a2e; --plum:#4a2a5e; --gold:#c9a227;
+    --cream:#fdf8f1; --paper:#fff; --line:#e8dfd2;
+    --muted:#7a6e80; --radius:16px;
+    --shadow:0 10px 30px rgba(36,26,46,.10);
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0;font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif;
+    color:var(--ink);background:var(--cream);line-height:1.55;
+  }
+  h1,h2,h3{font-family:Georgia,"Times New Roman",serif;margin:0 0 .4em;letter-spacing:-.01em}
+  img{max-width:100%;display:block}
+  button{font:inherit;cursor:pointer;border:0;background:none;color:inherit}
+
+  /* ---------- Header ---------- */
+  header.site{
+    position:sticky;top:0;z-index:40;background:rgba(253,248,241,.92);
+    backdrop-filter:blur(8px);border-bottom:1px solid var(--line);
+  }
+  .wrap{max-width:1120px;margin:0 auto;padding:0 20px}
+  .nav{display:flex;align-items:center;gap:18px;height:68px}
+  .logo{font-family:Georgia,serif;font-size:22px;font-weight:700;letter-spacing:-.02em}
+  .logo span{color:var(--gold)}
+  .nav nav{margin-left:auto;display:flex;gap:22px}
+  .nav nav a{color:var(--muted);text-decoration:none;font-size:15px}
+  .nav nav a:hover{color:var(--plum)}
+  .cart-btn{
+    position:relative;display:flex;align-items:center;gap:8px;
+    border:1px solid var(--line);background:var(--paper);
+    padding:9px 14px;border-radius:999px;font-size:14px;font-weight:600;
+  }
+  .cart-btn:hover{border-color:var(--plum)}
+  .badge{
+    background:var(--plum);color:#fff;border-radius:999px;
+    min-width:20px;height:20px;display:grid;place-items:center;
+    font-size:12px;padding:0 5px;
+  }
+
+  /* ---------- Hero ---------- */
+  .hero{padding:64px 0 44px;text-align:center}
+  .hero h1{font-size:clamp(32px,5vw,52px);line-height:1.1}
+  .hero p{color:var(--muted);max-width:520px;margin:0 auto 26px;font-size:17px}
+  .pill{
+    display:inline-block;font-size:12px;font-weight:700;letter-spacing:.12em;
+    text-transform:uppercase;color:var(--gold);border:1px solid var(--gold);
+    padding:5px 12px;border-radius:999px;margin-bottom:18px;
+  }
+  .btn{
+    display:inline-flex;align-items:center;justify-content:center;gap:8px;
+    padding:13px 26px;border-radius:999px;font-weight:600;font-size:15px;
+    transition:transform .15s, box-shadow .15s;
+  }
+  .btn:active{transform:scale(.97)}
+  .btn.primary{background:var(--plum);color:#fff;box-shadow:var(--shadow)}
+  .btn.primary:hover{background:#3d2250}
+  .btn.ghost{border:1px solid var(--line);background:var(--paper)}
+  .btn.ghost:hover{border-color:var(--plum)}
+  .btn:disabled{opacity:.5;cursor:not-allowed}
+
+  /* ---------- Filters ---------- */
+  .filters{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-bottom:34px}
+  .chip{
+    padding:9px 18px;border-radius:999px;border:1px solid var(--line);
+    background:var(--paper);font-size:14px;font-weight:500;color:var(--muted);
+  }
+  .chip[aria-pressed="true"]{background:var(--plum);color:#fff;border-color:var(--plum)}
+
+  /* ---------- Product grid ---------- */
+  .grid{
+    display:grid;gap:24px;padding-bottom:70px;
+    grid-template-columns:repeat(auto-fill,minmax(230px,1fr));
+  }
+  .card{
+    background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);
+    overflow:hidden;display:flex;flex-direction:column;
+    transition:transform .18s, box-shadow .18s;
+  }
+  .card:hover{transform:translateY(-4px);box-shadow:var(--shadow)}
+  .thumb{
+    aspect-ratio:1/1;display:grid;place-items:center;position:relative;
+    background:linear-gradient(135deg,var(--a,#f6e7d8),var(--b,#efd8e6));
+  }
+  .thumb .emoji{font-size:58px;filter:drop-shadow(0 6px 12px rgba(0,0,0,.12))}
+  .thumb img{width:100%;height:100%;object-fit:cover}
+  .tag{
+    position:absolute;top:12px;left:12px;font-style:normal;
+    background:var(--paper);color:var(--plum);font-size:11px;font-weight:700;
+    letter-spacing:.06em;text-transform:uppercase;padding:5px 10px;border-radius:999px;
+  }
+  .card-body{padding:16px 18px 18px;display:flex;flex-direction:column;flex:1}
+  .cat{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--gold);font-weight:700;margin:0 0 4px}
+  .card h3{font-size:17px;margin-bottom:6px}
+  .blurb{color:var(--muted);font-size:13.5px;margin:0 0 16px;flex:1}
+  .card-foot{display:flex;align-items:center;justify-content:space-between;gap:12px}
+  .price{font-weight:700;font-size:17px}
+  .add{
+    background:var(--plum);color:#fff;padding:9px 16px;border-radius:999px;
+    font-size:13.5px;font-weight:600;
+  }
+  .add:hover{background:#3d2250}
+
+  /* ---------- Cart drawer ---------- */
+  .overlay{
+    position:fixed;inset:0;background:rgba(36,26,46,.45);z-index:50;
+    opacity:0;pointer-events:none;transition:opacity .25s;
+  }
+  .overlay.open{opacity:1;pointer-events:auto}
+  .drawer{
+    position:fixed;top:0;right:0;height:100%;width:min(420px,100%);z-index:60;
+    background:var(--cream);display:flex;flex-direction:column;
+    transform:translateX(100%);transition:transform .28s ease;
+    box-shadow:-20px 0 50px rgba(0,0,0,.18);
+  }
+  .drawer.open{transform:translateX(0)}
+  .drawer header{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:20px 22px;border-bottom:1px solid var(--line);
+  }
+  .drawer header h2{font-size:19px;margin:0}
+  .x{font-size:20px;color:var(--muted);padding:6px;line-height:1}
+  .ship{
+    margin:16px 22px 0;padding:12px 14px;border-radius:12px;
+    background:#fff;border:1px solid var(--line);font-size:13px;color:var(--muted);
+  }
+  .bar{height:6px;background:var(--line);border-radius:999px;margin-top:8px;overflow:hidden}
+  .bar i{display:block;height:100%;background:var(--gold);width:0;transition:width .3s}
+  .items{list-style:none;margin:0;padding:16px 22px;overflow-y:auto;flex:1}
+  .items li{display:flex;gap:14px;padding:14px 0;border-bottom:1px solid var(--line)}
+  .items li:last-child{border-bottom:0}
+  .mini{
+    width:60px;height:60px;border-radius:12px;flex:none;display:grid;place-items:center;
+    font-size:26px;background:linear-gradient(135deg,var(--a,#f6e7d8),var(--b,#efd8e6));
+  }
+  .mini img{width:100%;height:100%;object-fit:cover;border-radius:12px}
+  .items h4{margin:0 0 2px;font-size:14.5px;font-family:inherit}
+  .items .p{font-size:13px;color:var(--muted);margin:0}
+  .qty{display:flex;align-items:center;gap:10px;margin-top:8px}
+  .qty button{
+    width:26px;height:26px;border-radius:8px;border:1px solid var(--line);
+    background:#fff;display:grid;place-items:center;font-size:15px;line-height:1;
+  }
+  .qty button:hover{border-color:var(--plum)}
+  .qty span{font-size:13.5px;min-width:16px;text-align:center}
+  .rm{margin-left:auto;font-size:12px;color:var(--muted);text-decoration:underline}
+  .rm:hover{color:#b3261e}
+  .drawer footer{padding:18px 22px 24px;border-top:1px solid var(--line);background:var(--paper)}
+  .row{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px}
+  .row strong{font-size:20px}
+  .tiny{font-size:12px;color:var(--muted);margin:0 0 14px}
+  .drawer .btn{width:100%}
+  .empty{text-align:center;color:var(--muted);padding:56px 20px;font-size:14.5px}
+  .empty span{font-size:40px;display:block;margin-bottom:12px}
+
+  /* ---------- Checkout modal ---------- */
+  .modal{
+    position:fixed;inset:0;z-index:70;display:grid;place-items:center;padding:20px;
+    background:rgba(36,26,46,.5);opacity:0;pointer-events:none;transition:opacity .2s;
+  }
+  .modal.open{opacity:1;pointer-events:auto}
+  .sheet{
+    background:var(--cream);border-radius:20px;padding:28px;width:min(440px,100%);
+    max-height:90vh;overflow-y:auto;transform:translateY(12px);transition:transform .2s;
+  }
+  .modal.open .sheet{transform:translateY(0)}
+  .sheet h2{font-size:22px}
+  .sheet p.sub{color:var(--muted);font-size:14px;margin:0 0 20px}
+  label{display:block;font-size:13px;font-weight:600;margin-bottom:6px}
+  input,textarea{
+    width:100%;padding:11px 13px;border:1px solid var(--line);border-radius:10px;
+    font:inherit;font-size:14.5px;background:#fff;margin-bottom:14px;
+  }
+  input:focus,textarea:focus{outline:2px solid var(--plum);outline-offset:1px;border-color:transparent}
+  .sheet .btn{width:100%;margin-top:6px}
+
+  /* ---------- Toast ---------- */
+  .toast{
+    position:fixed;left:50%;bottom:28px;transform:translate(-50%,80px);z-index:80;
+    background:var(--ink);color:#fff;padding:12px 20px;border-radius:999px;
+    font-size:14px;opacity:0;transition:all .3s;pointer-events:none;
+  }
+  .toast.show{opacity:1;transform:translate(-50%,0)}
+
+  footer.site{
+    border-top:1px solid var(--line);padding:34px 0;text-align:center;
+    color:var(--muted);font-size:13.5px;background:var(--paper);
+  }
+  @media(max-width:640px){
+    .nav nav{display:none}
+    .hero{padding:44px 0 32px}
+  }
+</style>
+</head>
+<body>
+
+<!-- ============ HEADER ============ -->
+<header class="site">
+  <div class="wrap nav">
+    <div class="logo">Gift<span>Hub</span></div>
+    <nav>
+      <a href="#shop">Shop</a>
+      <a href="#shop" data-filter="Personalised">Personalised</a>
+      <a href="#shop" data-filter="Self-care">Self-care</a>
+    </nav>
+    <button class="cart-btn" id="openCart" aria-label="Open cart">
+      🎁 Cart <span class="badge" id="badge">0</span>
+    </button>
+  </div>
+</header>
+
+<!-- ============ HERO ============ -->
+<section class="wrap hero">
+  <div class="pill">Free shipping over $60</div>
+  <h1>Gifts they'll actually keep.</h1>
+  <p>Thoughtfully curated presents for birthdays, anniversaries and the just-because moments.</p>
+  <a href="#shop" class="btn primary">Browse the collection</a>
+</section>
+
+<!-- ============ SHOP ============ -->
+<main class="wrap" id="shop">
+  <div class="filters" id="filters"></div>
+  <div class="grid" id="grid"></div>
+</main>
+
+<!-- ============ CART DRAWER ============ -->
+<div class="overlay" id="overlay"></div>
+<aside class="drawer" id="drawer" aria-hidden="true" aria-label="Shopping cart">
+  <header>
+    <h2>Your gift box</h2>
+    <button class="x" id="closeCart" aria-label="Close cart">✕</button>
+  </header>
+  <div class="ship" id="ship"></div>
+  <ul class="items" id="items"></ul>
+  <footer>
+    <div class="row"><span>Subtotal</span><strong id="subtotal">$0.00</strong></div>
+    <p class="tiny">Shipping and taxes calculated at checkout.</p>
+    <button class="btn primary" id="checkoutBtn">Checkout</button>
+  </footer>
+</aside>
+
+<!-- ============ CHECKOUT MODAL ============ -->
+<div class="modal" id="modal">
+  <form class="sheet" id="form">
+    <h2>Almost yours</h2>
+    <p class="sub">Enter your details and we'll confirm your order on WhatsApp.</p>
+    <label for="name">Full name</label>
+    <input id="name" name="name" required placeholder="Aung Min">
+    <label for="phone">Phone / WhatsApp</label>
+    <input id="phone" name="phone" required placeholder="+95 9 123 456 789">
+    <label for="address">Delivery address</label>
+    <textarea id="address" name="address" rows="3" required placeholder="No. 12, Bogyoke Road, Yangon"></textarea>
+    <label for="note">Gift note (optional)</label>
+    <input id="note" name="note" placeholder="Happy birthday! 🎉">
+    <div class="row"><span>Total</span><strong id="total">$0.00</strong></div>
+    <button class="btn primary" type="submit">Send order via WhatsApp</button>
+    <button class="btn ghost" type="button" id="cancelCheckout" style="margin-top:10px">Keep shopping</button>
+  </form>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<footer class="site">
+  © <span id="year"></span> Gift Hub — gifts chosen with care.
+</footer>
+
+<script>
+/* =========================================================
+   1. CONFIG — change these
+   ========================================================= */
+const CONFIG = {
+  currency: "$",
+  freeShipAt: 60,        // free shipping threshold
+  whatsapp: "15551234567" // <-- REPLACE with your number, digits only, incl. country code
+};
+
+/* =========================================================
+   2. PRODUCTS — this is your catalog, edit freely
+   Add `image: "https://..."` to any product to use a real photo
+   instead of the emoji tile.
+   ========================================================= */
+const PRODUCTS = [
+  { id:"gh01", name:"Personalised Star Map", price:34, emoji:"🌌", category:"Personalised", tag:"Bestseller",
+    blurb:"The exact night sky from your special date.", a:"#e8e2f5", b:"#cfc3ea" },
+  { id:"gh02", name:"Custom Name Necklace", price:29, emoji:"✨", category:"Personalised", tag:"",
+    blurb:"Gold-plated, engraved with any name.", a:"#f9edcf", b:"#eed9a3" },
+  { id:"gh03", name:"Photo Memory Book", price:42, emoji:"📸", category:"Personalised", tag:"New",
+    blurb:"Lay-flat hardcover, 30 of your favourite photos.", a:"#f6e7d8", b:"#eac9b3" },
+  { id:"gh04", name:"Hand-poured Candle Trio", price:26, emoji:"🕯️", category:"Home", tag:"",
+    blurb:"Soy wax, 45-hour burn, three seasonal scents.", a:"#f3e6dc", b:"#e0c4ad" },
+  { id:"gh05", name:"Linen Throw Blanket", price:48, emoji:"🛋️", category:"Home", tag:"",
+    blurb:"Stonewashed linen that gets softer every wash.", a:"#e6eee6", b:"#c9dac9" },
+  { id:"gh06", name:"Marble Serving Board", price:38, emoji:"🧀", category:"Home", tag:"",
+    blurb:"Hand-cut marble with a brass handle.", a:"#eef0f3", b:"#d5dae1" },
+  { id:"gh07", name:"Self-care Ritual Set", price:32, emoji:"🛁", category:"Self-care", tag:"Bestseller",
+    blurb:"Bath salts, body oil and a silk sleep mask.", a:"#f7e4e9", b:"#eec3d0" },
+  { id:"gh08", name:"Herbal Tea Flight", price:24, emoji:"🍵", category:"Self-care", tag:"",
+    blurb:"Six caffeine-free blends in a gift box.", a:"#e7f0e4", b:"#c7dcc2" },
+  { id:"gh09", name:"Leather Journal", price:27, emoji:"📔", category:"Stationery", tag:"",
+    blurb:"Full-grain leather, 160 pages of cotton paper.", a:"#f0e5d8", b:"#dcc4a9" },
+  { id:"gh10", name:"Brass Desk Lamp", price:56, emoji:"💡", category:"Home", tag:"New",
+    blurb:"Warm dimmable glow with a solid brass arm.", a:"#fbf0d6", b:"#e8d29a" },
+  { id:"gh11", name:"Wireless Photo Frame", price:64, emoji:"🖼️", category:"Tech", tag:"",
+    blurb:"Send new photos to it from anywhere.", a:"#e3e8f4", b:"#c4cfe8" },
+  { id:"gh12", name:"Mini Speaker Set", price:45, emoji:"🔊", category:"Tech", tag:"",
+    blurb:"Pocket-sized, 12-hour battery, surprisingly loud.", a:"#eae6f2", b:"#cdc2e2" }
+];
+
+/* =========================================================
+   3. STATE + HELPERS
+   ========================================================= */
+const KEY = "gifthub_cart_v1";
+let cart = {};          // { productId: qty }
+let activeFilter = "All";
+
+try { cart = JSON.parse(localStorage.getItem(KEY)) || {}; } catch { cart = {}; }
+
+const $  = (s, r = document) => r.querySelector(s);
+const esc = s => String(s).replace(/[&<>"']/g, c =>
+  ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;" }[c]));
+const money = n => CONFIG.currency + n.toFixed(2);
+const save = () => localStorage.setItem(KEY, JSON.stringify(cart));
+
+/* =========================================================
+   4. RENDER PRODUCT GRID
+   ========================================================= */
+const categories = ["All", ...new Set(PRODUCTS.map(p => p.category))];
+
+function renderFilters() {
+  $("#filters").innerHTML = categories.map(c => `
+    <button class="chip" data-cat="${esc(c)}"
+            aria-pressed="${c === activeFilter}">${esc(c)}</button>
+  `).join("");
+}
+
+function renderGrid() {
+  const list = activeFilter === "All"
+    ? PRODUCTS
+    : PRODUCTS.filter(p => p.category === activeFilter);
+
+  $("#grid").innerHTML = list.map(p => `
+    <article class="card">
+      <div class="thumb" style="--a:${p.a};--b:${p.b}">
+        ${p.image
+          ? `<img src="${esc(p.image)}" alt="${esc(p.name)}" loading="lazy">`
+          : `<span class="emoji">${p.emoji}</span>`}
+        ${p.tag ? `<em class="tag">${esc(p.tag)}</em>` : ""}
+      </div>
+      <div class="card-body">
+        <p class="cat">${esc(p.category)}</p>
+        <h3>${esc(p.name)}</h3>
+        <p class="blurb">${esc(p.blurb)}</p>
+        <div class="card-foot">
+          <span class="price">${money(p.price)}</span>
+          <button class="add" data-add="${p.id}">Add</button>
+        </div>
+      </div>
+    </article>
+  `).join("");
+}
+
+/* =========================================================
+   5. CART LOGIC
+   ========================================================= */
+function cartLines() {
+  return Object.entries(cart)
+    .map(([id, qty]) => {
+      const p = PRODUCTS.find(x => x.id === id);
+      return p ? { ...p, qty } : null;
+    })
+    .filter(Boolean);
+}
+
+function totals() {
+  const lines = cartLines();
+  const count = lines.reduce((n, l) => n + l.qty, 0);
+  const sub   = lines.reduce((n, l) => n + l.qty * l.price, 0);
+  return { lines, count, sub };
+}
+
+function addToCart(id, qty = 1) {
+  cart[id] = (cart[id] || 0) + qty;
+  save(); renderCart();
+  toast("Added to your gift box 🎁");
+}
+
+function setQty(id, qty) {
+  if (qty <= 0) delete cart[id];
+  else cart[id] = qty;
+  save(); renderCart();
+}
+
+function renderCart() {
+  const { lines, count, sub } = totals();
+
+  $("#badge").textContent = count;
+  $("#subtotal").textContent = money(sub);
+  $("#total").textContent = money(sub);
+  $("#checkoutBtn").disabled = count === 0;
+
+  // free-shipping progress
+  const left = CONFIG.freeShipAt - sub;
+  $("#ship").innerHTML = count === 0
+    ? `Add ${money(CONFIG.freeShipAt)} to unlock free shipping.`
+    : left > 0
+      ? `You're <strong>${money(left)}</strong> away from free shipping.
+         <div class="bar"><i style="width:${Math.min(100, sub / CONFIG.freeShipAt * 100)}%"></i></div>`
+      : `🎉 Free shipping unlocked!`;
+
+  // line items
+  $("#items").innerHTML = lines.length === 0
+    ? `<div class="empty"><span>🎁</span>Your gift box is empty.</div>`
+    : lines.map(l => `
+      <li>
+        <div class="mini" style="--a:${l.a};--b:${l.b}">
+          ${l.image ? `<img src="${esc(l.image)}" alt="">` : l.emoji}
+        </div>
+        <div style="flex:1">
+          <h4>${esc(l.name)}</h4>
+          <p class="p">${money(l.price)} each</p>
+          <div class="qty">
+            <button data-dec="${l.id}" aria-label="Decrease quantity">−</button>
+            <span>${l.qty}</span>
+            <button data-inc="${l.id}" aria-label="Increase quantity">+</button>
+            <button class="rm" data-rm="${l.id}">Remove</button>
+          </div>
+        </div>
+        <strong>${money(l.price * l.qty)}</strong>
+      </li>
+    `).join("");
+}
+
+/* =========================================================
+   6. UI PLUMBING
+   ========================================================= */
+const drawer  = $("#drawer");
+const overlay = $("#overlay");
+const modal   = $("#modal");
+
+function openCart() {
+  drawer.classList.add("open");
+  overlay.classList.add("open");
+  drawer.setAttribute("aria-hidden", "false");
+}
+function closeCart() {
+  drawer.classList.remove("open");
+  overlay.classList.remove("open");
+  drawer.setAttribute("aria-hidden", "true");
+}
+function openModal()  { modal.classList.add("open");  $("#name").focus(); }
+function closeModal() { modal.classList.remove("open"); }
+
+let toastTimer;
+function toast(msg) {
+  const el = $("#toast");
+  el.textContent = msg;
+  el.classList.add("show");
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove("show"), 2000);
+}
+
+/* --- event delegation --- */
+document.addEventListener("click", e => {
+  const add = e.target.closest("[data-add]");
+  if (add) { addToCart(add.dataset.add); return; }
+
+  const inc = e.target.closest("[data-inc]");
+  if (inc) { setQty(inc.dataset.inc, (cart[inc.dataset.inc] || 0) + 1); return; }
+
+  const dec = e.target.closest("[data-dec]");
+  if (dec) { setQty(dec.dataset.dec, (cart[dec.dataset.dec] || 0) - 1); return; }
+
+  const rm = e.target.closest("[data-rm]");
+  if (rm) { setQty(rm.dataset.rm, 0); return; }
+
+  const chip = e.target.closest(".chip");
+  if (chip) { activeFilter = chip.dataset.cat; renderFilters(); renderGrid(); return; }
+
+  const navFilter = e.target.closest("[data-filter]");
+  if (navFilter) {
+    activeFilter = navFilter.dataset.filter;
+    renderFilters(); renderGrid();
+  }
+});
+
+$("#openCart").addEventListener("click", openCart);
+$("#closeCart").addEventListener("click", closeCart);
+overlay.addEventListener("click", closeCart);
+$("#cancelCheckout").addEventListener("click", closeModal);
+modal.addEventListener("click", e => { if (e.target === modal) closeModal(); });
+
+$("#checkoutBtn").addEventListener("click", () => {
+  if (totals().count === 0) return;
+  openModal();
+});
+
+document.addEventListener("keydown", e => {
+  if (e.key === "Escape") { closeCart(); closeModal(); }
+});
+
+/* =========================================================
+   7. CHECKOUT — sends the order to WhatsApp
+   Swap this for Stripe / PayPal / Shopify when you're ready.
+   ========================================================= */
+$("#form").addEventListener("submit", e => {
+  e.preventDefault();
+  const { lines, sub } = totals();
+  if (!lines.length) return;
+
+  const name    = $("#name").value.trim();
+  const phone   = $("#phone").value.trim();
+  const address = $("#address").value.trim();
+  const note    = $("#note").value.trim();
+
+  const items = lines
+    .map(l => `• ${l.name} × ${l.qty} — ${money(l.price * l.qty)}`)
+    .join("\n");
+
+  const message =
+`🎁 NEW ORDER — GIFT HUB
+
+${items}
+
+Subtotal: ${money(sub)}
+Name: ${name}
+Phone: ${phone}
+Address: ${address}${note ? `\nGift note: ${note}` : ""}`;
+
+  const url = `https://wa.me/${CONFIG.whatsapp}?text=${encodeURIComponent(message)}`;
+  window.open(url, "_blank");
+
+  cart = {};
+  save(); renderCart(); closeModal(); closeCart();
+  toast("Order sent — we'll confirm shortly ✨");
+});
+
+/* =========================================================
+   8. BOOT
+   ========================================================= */
+$("#year").textContent = new Date().getFullYear();
+renderFilters();
+renderGrid();
+renderCart();
+</script>
+</body>
+</html>
